@@ -1,0 +1,64 @@
+upstream dev-grafana {
+	least_conn;
+	{% for host in groups['prometheusGrafanaServers'] -%}
+	server	{{ host }}:{{ grafana.conf.port }};
+	{%- if not loop.last %}
+
+	{% endif -%}
+	{%- endfor %}
+}
+
+upstream dev-prometheus {
+	least_conn;
+	{% for host in groups['prometheusGrafanaServers'] -%}
+	server	{{ host }}:{{ prometheus.conf.port }};
+	{%- if not loop.last %}
+
+	{% endif -%}
+	{%- endfor %}
+}
+
+server {
+	listen				{{ nginx.port.https }}	ssl	http2;
+	server_name			{{ grafana.proxy.url }};
+
+	ssl_certificate			/etc/nginx/certs/my.cert.crt;
+	ssl_certificate_key		/etc/nginx/certs/my.key.crt;
+
+	ssl_ciphers			HIGH:!aNULL:!MD5;
+	ssl_prefer_server_ciphers	on;
+	ssl_protocols			TLSv1.2 TLSv1.3;
+
+	# 10MB shared ssl session with timeout 10 min
+	ssl_session_cache		shared:SSL:10m;
+	ssl_session_timeout		10m;
+
+	proxy_http_version		1.1;
+	proxy_set_header		Upgrade		$http_upgrade;
+	proxy_set_header		Connection	"Upgrade";
+	proxy_set_header		Host		$http_host;
+
+	location / {
+		proxy_pass		https://dev-grafana;
+	}
+}
+
+server {
+	listen				{{ nginx.port.https }}	ssl	http2;
+	server_name			{{ prometheus.proxy.url }};
+	
+	ssl_certificate			/etc/nginx/certs/my.cert.crt;
+	ssl_certificate_key		/etc/nginx/certs/my.key.crt;
+
+	ssl_ciphers			HIGH:!aNULL:!MD5;
+	ssl_prefer_server_ciphers	on;
+	ssl_protocols			TLSv1.2	TLSv1.3;
+
+	# 10MB shared ssl session with timeout 10 min
+	ssl_session_cache		shared:SSL:10m;
+	ssl_session_timeout		10m;
+
+	location / {
+		proxy_pass		https://dev-prometheus;
+	}
+}

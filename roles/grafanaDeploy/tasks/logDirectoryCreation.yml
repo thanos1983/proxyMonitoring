@@ -1,0 +1,10 @@
+---
+# tasks file for roles/loggingConfigurations logDirectoryCreation 
+- name: Create log and conf dir on Remote
+  become: true
+  ansible.builtin.file:
+    path: "{{ grafana.conf.dirs.data }}"
+    owner: "{{ grafana.systemAccount.name }}"
+    group: "{{ grafana.systemAccount.gid }}"
+    state: directory
+    recurse: yes

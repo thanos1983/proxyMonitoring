@@ -1,0 +1,6 @@
+---
+# tasks file for roles/grafanaDeploy removeDirs
+- name: Recursively remove directory
+  ansible.builtin.file:
+    path: "{{ grafana.conf.dirs.data }}"
+    state: absent 

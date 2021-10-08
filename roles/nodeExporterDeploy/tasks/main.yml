@@ -1,0 +1,45 @@
+---
+# tasks file for roles/nodeExporterDeploy main
+- name: Validate Python Interpeter
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: interpreterValidation
+  vars:
+    pythonInterpreter: "python3"
+
+- name: Create system Account for Node Exporter
+  ansible.builtin.include_tasks: account.yml
+  tags: [ becomeUser ]
+
+- name: Validate Docker Daemon
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: daemon
+
+- name: Log into Artifactory
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: login.yml
+
+- name: Stop container in case that is running
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: stop
+
+- name: Prune everything (including non-dangling images)
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: prune.yml
+
+- name: Deploy Node Exporter image
+  ansible.builtin.include_tasks: nodeExporterDeploy.yml
+
+- name: Log out from Artifactory
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: logout.yml
+
+- name: Port Validation
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: portValidation.yml

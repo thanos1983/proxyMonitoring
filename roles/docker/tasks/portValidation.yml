@@ -1,0 +1,10 @@
+---
+# tasks file for roles/docker portValidation
+- name: Check Ports are Accessible for container "{{ repo.container_name }}"
+  ansible.builtin.wait_for:
+    host: "{{ inventory_hostname }}"
+    port: "{{ item }}"
+    state: started
+    delay: 0
+    timeout: 3
+  loop: "{{ portsToCheck }}"

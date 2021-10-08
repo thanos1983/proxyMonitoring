@@ -1,0 +1,7 @@
+---
+# tasks file for roles/nginxBuild conf
+- name: Copy template files for "{{ env_variable }}" to host
+  ansible.builtin.template:
+    src: "{{ item.src }}.j2"
+    dest: "{{ item.dest }}/{{ item.src }}"
+  loop: "{{ templateFiles[env_variable].values() | flatten }}"

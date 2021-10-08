@@ -1,0 +1,25 @@
+---
+# tasks file for roles/docker main
+- name: Docker daemon validation
+  ansible.builtin.include_tasks: daemon.yml
+
+- name: Login to Arifactory Build / Push Dockerfile then logout and prune
+  block:
+  - name: Log into Artifactory
+    ansible.builtin.include_tasks: login.yml
+
+  - name: Build and push Dockerfile
+    ansible.builtin.include_tasks: build.yml
+
+  - name: Log out from Artifactory
+    ansible.builtin.include_tasks: logout.yml
+
+  - name: Prune everything (including non-dangling images)
+    ansible.builtin.include_tasks: prune.yml
+  rescue:
+    - ansible.builtin.include_role:
+        name: vault
+        tasks_from: cleanUp
+
+    - ansible.builtin.fail:
+        msg: Error during loging / build / push to Artifactory

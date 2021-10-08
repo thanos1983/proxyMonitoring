@@ -1,0 +1,25 @@
+---
+# tasks file for roles/docker daemon
+- name: populate service facts
+  ansible.builtin.service_facts:
+  no_log: true
+
+- name: Verify docker dameon is running
+  block:
+    - name: Debug Docker socket status
+      ansible.builtin.debug:
+        var: ansible_facts.services['docker'].state
+      when: ansible_facts.services['docker'].state is defined
+
+    - name: Fail when docker daemon is not running
+      ansible.builtin.fail:
+        msg: "docker service is {{ ansible_facts.services['docker'].state }}"
+      when:
+        - ansible_facts.services['docker'].state is defined
+        - ansible_facts.services['docker'].state != "running"
+  rescue:
+    - ansible.builtin.debug:
+        var: ansible_facts.services['docker']
+ 
+    - ansible.builtin.fail:
+        msg: "Check docker service status."

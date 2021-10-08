@@ -1,0 +1,20 @@
+{{ nginx.conf.dirs.data }}/*log {
+	# creates a new log file and set the permission 644 with the ownership nginx
+	create 0644 root root
+	# daily rotation
+	daily
+	# save 7 copies of the log file
+	rotate 7
+	# do not output error if logfile is missing
+	missingok
+	# do not rotate log file if it is empty
+	notifempty
+	# compress the old copies of log files with gzip(1) by default
+	compress
+	# makes the scripts to run once, no matter how many logs match the wildcarded pattern, and whole pattern is passed to them
+	sharedscripts
+	# lines between postrotate and endscript are executed after the log file is rotated
+	postrotate
+		docker exec {{ repo.container_name }} nginx -s reload
+	endscript
+}

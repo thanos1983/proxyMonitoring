@@ -1,0 +1,19 @@
+---
+- hosts: "{{ target_hosts }}"
+  remote_user: "{{ ansible_user }}"
+  any_errors_fatal: true
+  connection: local
+
+  roles:
+    - role: nginxBuild
+      tags: [ nginxBuild ]
+    - role: prometheusBuild
+      tags: [ prometheusBuild ]
+    - role: nodeExporterBuild
+      tags: [ nodeExporterBuild ]
+    - role: cadvisorBuild
+      tags: [ cadvisorBuild ]
+    - role: grafanaBuild
+      tags: [ grafanaBuild ]
+    - role: haProxyBuild
+      tags: [ haProxyBuild ]

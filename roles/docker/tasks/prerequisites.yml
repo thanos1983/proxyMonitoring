@@ -1,0 +1,14 @@
+---
+# tasks file for roles/docker prerequisites
+- name: Create dir(s) in "{{ tmp }}"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+  loop: "{{ tmp_conf.values() | flatten }}"
+
+- name: Copy conf files for "{{ env_variable }}" to host
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop: "{{ files[env_variable].values() | flatten }}"

@@ -1,0 +1,21 @@
+---
+# tasks file for roles/prometheusDeploy prometheusDeploy
+- name: Run Prometheus Server Container
+  community.docker.docker_container:
+    pull: true
+    network_mode: default
+    tls_hostname: localhost
+    name: "{{ repo.container_name }}"
+    container_default_behavior: compatibility
+    image: "{{ repo.name }}:{{ deploy_tag }}"
+    volumes:
+      - "{{ prometheus.conf.dirs.data }}:/prometheus:rw"
+    published_ports: "{{ portBinds }}"
+    restart_policy: unless-stopped
+    command: [ "--config.file=/{{ prometheus.conf.dirs.conf }}/{{ prometheus.conf.files.glob }}",
+               "--storage.tsdb.path=/prometheus",
+               "--web.console.libraries=/usr/share/prometheus/console_libraries",
+               "--web.console.templates=/usr/share/prometheus/consoles",
+               "--web.config.file=/{{ prometheus.conf.dirs.conf }}/{{ prometheus.conf.files.web }}",
+               "--web.external-url=https://{{ prometheus.proxy.url }}",
+               "--web.route-prefix='/'" ]

@@ -1,0 +1,124 @@
+---
+user: 'demo'
+group: 'demo'
+becomeUser: 'demo'
+docker_username: 'demo'
+docker_password: 'demo'
+# ansible_python_interpreter: '/usr/bin/python3'
+
+url: 'https://vault.my.private.domain'
+
+nginx:
+  port:
+    https: '4443'
+  conf:
+    dirs:
+      data: '/data01/{{ user }}/nginx/logs'
+    files:
+      conf: 'main.conf'
+      docker: 'Dockerfile'
+  cert:
+    files:
+      pfx: 'cert.pfx'
+      key: 'key.crt'
+      crt: 'cert.crt'
+      ca: 'CA.pem'
+
+nodeExporter:
+  conf:
+    port: '9100'
+    files:
+      web: 'web-config.yml'
+      docker: 'Dockerfile'
+    dirs:
+      conf: '/etc/node_exporter'
+  systemAccount:
+    name: 'node_exporter'
+    shell: '/bin/false'
+    uid: '65535'
+    gid: '65535'
+    groups: '{{ group }}'
+    comment: 'System Account for Node Exporter'
+  cert:
+    dir: '/etc/node_exporter/certs'
+    files:
+      pfx: 'ca.pfx'
+      key: 'ca.key'
+      crt: 'ca.crt'
+
+cadvisor:
+  conf:
+    port: '8080'
+    files:
+      web: 'sample.htdigest'
+      docker: 'Dockerfile'
+    dirs:
+      conf: '/etc/cadvisor'
+  cert:
+    dir: '/etc/cadvisor/certs'
+    files:
+      pfx: 'ca.pfx'
+      key: 'ca.key'
+      crt: 'ca.crt'
+
+prometheus:
+  proxy:
+    url: 'dev-prometheus.my.private.domain'
+  docker:
+    metrics:
+      port: '9323'
+  conf:
+    port: '9090'
+    files:
+      web: 'web-config.yml'
+      glob: 'prometheus.yml'
+      docker: 'Dockerfile'
+    dirs:
+      conf: '/etc/prometheus'
+      data: '/data01/{{ user }}/prometheus'
+  systemAccount:
+    name: 'nobody'
+    shell: '/bin/false'
+    uid: '65534'
+    gid: '65534'
+    groups: '{{ group }}'
+    comment: 'System Account for Prometheus'
+  cert:
+    dir: '/etc/prometheus/certs'
+    files:
+      pfx: 'ca.pfx'
+      key: 'ca.key'
+      crt: 'ca.crt'
+      ca: 'CA.pem'
+
+grafana:
+  var:
+    libDir: '/var/lib/grafana/dashboards'
+  proxy:
+    url: 'dev-grafana.my.private.domain'
+  dashboards:
+    nodeExporterFull: 'node-exporter-full_rev23.json'
+  conf:
+    port: '3000'
+    files:
+      glob: 'grafana.ini'
+      docker: 'Dockerfile'
+      grafanaDashboards: 'dashboards.yml'
+      dataSourcePrometheus: 'datasource.yml'
+    dirs:
+      conf: '/etc/grafana'
+      data: '/data01/{{ user }}/grafana'
+  systemAccount:
+    name: 'grafana'
+    shell: '/bin/false'
+    uid: '472'
+    gid: '0'
+    groups: '{{ group }}'
+    comment: 'System Account for Grafana'
+  cert:
+    dir: '/etc/grafana/certs'
+    files:
+      pfx: 'ca.pfx'
+      key: 'grafana.key'
+      crt: 'grafana.crt'
+      ca: 'CA.pem'

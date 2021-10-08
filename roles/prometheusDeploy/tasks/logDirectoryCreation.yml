@@ -1,0 +1,10 @@
+---
+# tasks file for roles/loggingConfigurations logDirectoryCreation 
+- name: Create log and conf dir on Remote
+  become: true
+  ansible.builtin.file:
+    path: "{{ prometheus.conf.dirs.data }}"
+    owner: "{{ prometheus.systemAccount.name }}"
+    group: "{{ prometheus.systemAccount.gid }}"
+    state: directory
+    recurse: yes

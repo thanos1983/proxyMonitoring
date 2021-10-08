@@ -1,0 +1,19 @@
+---
+# tasks file for roles/nginxDeploy nginxDeploy
+- name: Run NGINX Container
+  community.docker.docker_container:
+    pull: true
+    network_mode: default
+    tls_hostname: localhost
+    name: "{{ repo.container_name }}"
+    container_default_behavior: compatibility
+    image: "{{ repo.name }}:{{ deploy_tag }}"
+    volumes:
+      - "{{ nginx.conf.dirs.data }}:/var/log/nginx:rw"
+    published_ports: "{{ portBinds }}"
+    restart_policy: unless-stopped
+    env:
+      UID_ENV: "{{ nginx_env.UID_ENV }}"
+      GID_ENV: "{{ nginx_env.GID_ENV }}"
+      VOLUMES_ENV: "{{ nginx_env.VOLUMES_ENV }}"
+      USERNAME_ENV: "{{ nginx_env.USERNAME_ENV }}"

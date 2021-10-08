@@ -1,0 +1,87 @@
+# A scrape configuration scraping a Node Exporter and the Prometheus server
+# my global config
+global:
+  scrape_interval:	15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval:	15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # Configures the protocol scheme used for requests.
+    scheme: 'https'
+
+    # Configures the scrape request's TLS settings.
+    tls_config:
+      ca_file: /{{ prometheus.cert.dir }}/{{ prometheus.cert.files.ca }}
+
+    basic_auth:
+      username: {{ user }}
+      password: {{ user }}
+
+    # The HTTP resource path on which to fetch metrics from targets.
+    # metrics_path: <path> | default = /metrics
+
+    static_configs:
+    {% for host in groups['prometheusGrafanaServers'] -%}
+    - targets: ['{{ host }}:{{ prometheus.conf.port }}']
+    {%- if not loop.last %}
+
+    {% endif -%}
+    {%- endfor %}
+
+
+  - job_name: 'node exporter'
+
+    # Configures the protocol scheme used for requests.
+    scheme: 'https'
+
+    # Configures the scrape request's TLS settings.
+    tls_config:
+      ca_file: /{{ prometheus.cert.dir }}/{{ prometheus.cert.files.ca }}
+
+    basic_auth:
+      username: {{ user }}
+      password: {{ user }}
+
+    # The HTTP resource path on which to fetch metrics from targets.
+    # metrics_path: <path> | default = /metrics
+
+    static_configs:
+    {% for host in groups['prometheusClients'] -%}
+    - targets: ['{{ host }}:{{ nodeExporter.conf.port }}']
+    {%- if not loop.last %}
+
+    {% endif -%}
+    {%- endfor %}
+
+
+  - job_name: 'docker metrics'
+    # Configures the protocol scheme used for requests.
+    scheme: 'http'
+
+    # The HTTP resource path on which to fetch metrics from targets.
+    # metrics_path: <path> | default = /metrics
+
+    static_configs:
+    {% for host in groups['prometheusClients'] -%}
+    - targets: ['{{ host }}:{{ prometheus.docker.metrics.port }}']
+    {%- if not loop.last %}
+
+    {% endif -%}
+    {%- endfor %}

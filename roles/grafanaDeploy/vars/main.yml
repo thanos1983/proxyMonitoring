@@ -1,0 +1,12 @@
+---
+# vars file for grafanaDeploy
+portBinds:
+  - '{{ grafana.conf.port }}:{{ grafana.conf.port }}'
+
+portsToCheck:
+  - '{{ grafana.conf.port }}'
+
+repo:
+  name: 'my.private.dockerrepo/grafana'
+  registry: 'my.private.dockerrepo'
+  container_name: 'grafana'

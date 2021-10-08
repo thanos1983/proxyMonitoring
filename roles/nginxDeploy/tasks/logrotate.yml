@@ -1,0 +1,19 @@
+---
+# tasks file for roles/nginxDeploy logrotate
+- name: Copy logrotate.d configurations on Remote
+  become: true
+  ansible.builtin.template:
+    src: nginx.j2
+    dest: /etc/logrotate.d/nginx
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy logrotate script on Remote
+  become: true
+  ansible.builtin.copy:
+    src: logrotateNnginxContainer.sh
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: '0755'

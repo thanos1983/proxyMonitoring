@@ -1,0 +1,12 @@
+---
+# tasks file for roles/docker build
+- name: Build and push Dockerfile with name "{{ repo.name }}" and tag "{{ build_tag }}"
+  community.docker.docker_image:
+    build:
+      pull: yes
+      path: "{{ tmp }}"
+    name: "{{ repo.name }}"
+    tag: "{{ build_tag }}"
+    push: yes
+    state: present
+    source: build

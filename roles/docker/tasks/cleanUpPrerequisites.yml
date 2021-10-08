@@ -1,0 +1,6 @@
+---
+# tasks file for roles/docker cleanUpPrerequisites
+- name: Remove dir "{{ tmp }}" in tmp
+  ansible.builtin.file:
+    path: "{{ tmp }}"
+    state: absent

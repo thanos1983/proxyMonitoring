@@ -1,0 +1,8 @@
+# docker build --rm -t my.private.dockerrepo/node-exporter:0.0.1 .
+# docker run --rm --name <e.g. node-exporter> -d my.private.dockerrepo/node-exporter:0.0.1
+
+FROM {{ repo.registry }}/node-exporter:v1.1.2.1
+LABEL maintainer="athanasios.garyfalos@cpan.org"
+
+COPY ["certs", "${CERT_DIR}"]
+COPY ["{{ nodeExporter.conf.files.web }}", "${CONF_DIR}"]

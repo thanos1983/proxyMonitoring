@@ -1,0 +1,13 @@
+---
+# tasks file for roles/docker prune
+- name: Prune everything (including non-dangling images)
+  community.docker.docker_prune:
+    timeout: 120
+    containers: yes
+    images: yes
+    images_filters:
+      dangling: false
+    networks: yes
+    volumes: yes
+    builder_cache: yes
+  ignore_errors: yes

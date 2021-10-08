@@ -1,0 +1,7 @@
+---
+# tasks file for roles/dockerCore interpreterValidation
+- name: Validate we run with the correct Ansible interpreter
+  assert:
+    that:
+      - ansible_python.executable == "/usr/bin/{{ pythonInterpreter }}"
+    fail_msg: "'Ansible' interpreter must be {{ pythonInterpreter }} check ansible.cfg or inventory."

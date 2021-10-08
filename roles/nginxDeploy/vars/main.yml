@@ -1,0 +1,26 @@
+---
+# vars file for nginxDeploy
+repo:
+  name: 'my.private.dockerrepo/proxy-nginx'
+  registry: 'my.private.dockerrepo'
+  container_name: 'proxy-nginx'
+
+nginx_env:
+  UID_ENV: '9999'
+  GID_ENV: '9999'
+  VOLUMES_ENV: '/var/lib/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /etc/nginx/certs'
+  USERNAME_ENV: '{{ user }}'
+
+portBinds:
+  - '443:{{ nginx.port.https }}'
+  - '7100:7100'
+  - '8062:8062'
+  - '8063:8063'
+  - '8065:8065'
+
+portsToCheck:
+  - 443
+  - 7100
+  - 8062
+  - 8063
+  - 8065

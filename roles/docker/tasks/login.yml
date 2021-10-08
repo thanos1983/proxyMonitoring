@@ -1,0 +1,7 @@
+---
+# tasks file for roles/docker login
+- name: Log into Artifactory with "{{ docker_username }}" user
+  community.docker.docker_login:
+    registry: "{{ repo.registry }}"
+    username: "{{ docker_username }}"
+    password: "{{ docker_password }}"

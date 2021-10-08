@@ -1,0 +1,12 @@
+---
+# vars file for prometheusDeploy
+portBinds:
+  - '{{ prometheus.conf.port }}:{{ prometheus.conf.port }}'
+
+portsToCheck:
+  - '{{ prometheus.conf.port }}'
+
+repo:
+  name: 'my.private.dockerrepo/prometheus'
+  registry: 'my.private.dockerrepo'
+  container_name: 'prometheus'

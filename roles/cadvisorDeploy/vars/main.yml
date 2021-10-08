@@ -1,0 +1,12 @@
+---
+# vars file for cadvisorDeploy
+portBinds:
+  - '{{ cadvisor.conf.port }}:{{ cadvisor.conf.port }}'
+
+portsToCheck:
+  - '{{ cadvisor.conf.port }}'
+
+repo:
+  name: 'my.private.dockerrepo/cadvisor'
+  registry: 'my.private.dockerrepo'
+  container_name: 'cadvisor'

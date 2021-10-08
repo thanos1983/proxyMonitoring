@@ -1,0 +1,12 @@
+---
+# tasks file for roles/nginxDeploy cron
+- name: Set cronjob at midnight for logrotate
+  become: true
+  ansible.builtin.cron:
+    name: "nginx lopgrotate"
+    weekday: "*"
+    user: "root"
+    minute: "0"
+    hour: "0"
+    cron_file: "/etc/crontab"
+    job: "/usr/local/bin/logrotateNnginxContainer.sh 2>/dev/null"

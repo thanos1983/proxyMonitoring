@@ -1,0 +1,7 @@
+---
+# tasks file for roles/nodeExporterBuild conf
+- name: Prepare the conf files and place them at "{{ tmp }}" dir
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ tmp }}/{{ item }}"
+  loop: "{{ cadvisor.conf.files.values() | flatten }}"

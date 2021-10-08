@@ -1,0 +1,17 @@
+# docker build --rm -t my.private.dockerrepo/grafana-monitoring:0.0.1 .
+# docker run --rm --name <e.g. grafana> -d my.private.dockerrepo/grafana-monitoring:0.0.1
+
+FROM {{ repo.registry }}/grafana:8.0.4.5
+LABEL maintainer="athanasios.garyfalos@cpan.org"
+
+COPY ["certs", "${CERT_DIR}"]
+COPY ["dashboards", "${DASH_DIR}"]
+COPY ["{{ grafana.conf.files.glob }}", "${CONF_DIR}"]
+COPY ["{{ grafana.conf.files.grafanaDashboards }}", "${PROV_DASH}"]
+COPY ["{{ grafana.conf.files.dataSourcePrometheus }}", "${SOURCE_DIR}"]
+
+# switch to root user to change ownership of dir(s)
+USER root
+RUN chown -R grafana:root ${CERT_DIR} ${PROV_DIR}
+# switch to downgraded user grafana
+USER grafana

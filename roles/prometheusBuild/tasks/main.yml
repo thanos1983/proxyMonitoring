@@ -1,0 +1,36 @@
+---
+# tasks file for roles/prometheusBuild main
+- name: Validate Python Interpeter
+  ansible.builtin.include_role:
+    name: docker
+    tasks_from: interpreterValidation
+  vars:
+    pythonInterpreter: "python3"
+
+- name: Block for Prometheus
+  block:
+    - name: Get CA certificates from Vault for Prometheus
+      ansible.builtin.include_role:
+        name: vault
+
+    - name: Create relevant directories
+      ansible.builtin.include_role:
+        name: docker
+        tasks_from: prerequisites
+
+    - name: Prepare Prometheus configuration file(s)
+      ansible.builtin.include_tasks: conf.yml
+
+    - name: Build Dockerfile
+      ansible.builtin.include_role:
+        name: docker
+  always:
+    - name: Cleanup always at the end of previous tasks
+      ansible.builtin.include_role:
+        name: vault
+        tasks_from: cleanUp
+
+    - name: Cleanup dir(s)
+      ansible.builtin.include_role:
+        name: docker
+        tasks_from: cleanUpPrerequisites

@@ -1,0 +1,10 @@
+---
+# tasks file for roles/loggingConfigurations logDirectoryCreation 
+- name: Create log and conf dir on Remote
+  become: true
+  ansible.builtin.file:
+    path: "{{ nginx.conf.dirs.data }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    state: directory
+    recurse: yes

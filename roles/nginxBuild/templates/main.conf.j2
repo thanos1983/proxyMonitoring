@@ -1,0 +1,28 @@
+server {
+	listen				{{ nginx.port.https }} ssl http2 default_server;
+	listen				[::]:{{ nginx.port.https }} ssl http2 default_server;
+	server_name			_;
+
+	ssl_certificate			/etc/nginx/certs/my.cert.crt;
+	ssl_certificate_key		/etc/nginx/certs/my.key.crt;
+
+	ssl_ciphers			HIGH:!aNULL:!MD5;
+	ssl_prefer_server_ciphers	on;
+	ssl_protocols			TLSv1.2 TLSv1.3;
+
+	# 10MB shared ssl session with timeout 10 min
+	ssl_session_cache		shared:SSL:10m;
+	ssl_session_timeout		10m;
+
+	location / {
+		root	/usr/share/nginx/html;
+		index	index.html index.htm;
+	}
+
+	error_page	404	/404.html;
+	error_page	500	502 503 504 /50x.html;
+
+	location = /50x.html {
+		root	/usr/share/nginx/html;
+	}
+}

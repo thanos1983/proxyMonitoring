@@ -1,0 +1,35 @@
+---
+# vars file for roles/grafanaBuild
+tmp: '/tmp/grafana'
+
+tmp_conf:
+  certs: '{{ tmp }}/certs'
+  dashboards: '{{ tmp }}/dashboards'
+
+files:
+  dev:
+    certs:
+      - { src: '{{ grafana.cert.files.ca }}', dest: '{{ tmp_conf.certs }}' }
+      - { src: '{{ grafana.cert.files.crt }}', dest: '{{ tmp_conf.certs }}' }
+      - { src: '{{ grafana.cert.files.key }}', dest: '{{ tmp_conf.certs }}' }
+      - { src: '{{ grafana.dashboards.nodeExporterFull }}', dest: '{{ tmp_conf.dashboards }}' }
+  prod:
+    certs:
+      - { src: '{{ grafana.cert.files.ca }}', dest: '{{ tmp_conf.certs }}' }
+      - { src: '{{ grafana.cert.files.crt }}', dest: '{{ tmp_conf.certs }}' }
+      - { src: '{{ grafana.cert.files.key }}', dest: '{{ tmp_conf.certs }}' }
+      - { src: '{{ grafana.dashboards.nodeExporterFull }}', dest: '{{ tmp_conf.dashboards }}' }
+
+repo:
+  name: 'my.private.dockerrepo/grafana'
+  registry: 'my.private.dockerrepo'
+
+vault:
+  vault_paths:
+    cert_path: 'files/CA.pem'
+    secret_pfx: 'vault_path/sample.pfx'
+    secret_properties: 'vault_path/common.properties'
+  sensitive_data:
+    pfxPathFile: '{{ ansible_parent_role_paths[0] }}/files/{{ grafana.cert.files.pfx }}'
+    keyPathFile: '{{ ansible_parent_role_paths[0] }}/files/{{ grafana.cert.files.key }}'
+    crtPathFile: '{{ ansible_parent_role_paths[0] }}/files/{{ grafana.cert.files.crt }}'

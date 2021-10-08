@@ -1,0 +1,8 @@
+# docker build --rm -t my.private.dockerrepo/cadvisor:0.0.1 .
+# docker run --rm --name <e.g. cadvisor> -d my.private.dockerrepo/cadvisor:0.0.1
+
+FROM {{ repo.registry }}/cadvisor:v0.37.5.1
+LABEL maintainer="athanasios.garyfalos@cpan.org"
+
+COPY ["certs", "${CERT_DIR}"]
+COPY ["{{ cadvisor.conf.files.web }}", "${CONF_DIR}"]

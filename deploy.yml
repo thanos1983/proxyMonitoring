@@ -1,0 +1,16 @@
+---
+- hosts: "{{ target_hosts }}"
+  remote_user: "{{ ansible_user }}"
+  any_errors_fatal: true
+
+  roles:  
+    - role: nginxDeploy
+      tags: [ nginxDeploy ]
+    - role: prometheusDeploy
+      tags: [ prometheusDeploy ]
+    - role: nodeExporterDeploy
+      tags: [ nodeExporterDeploy ]
+    - role: cadvisorDeploy
+      tags: [ cadvisorDeploy ]
+    - role: grafanaDeploy
+      tags: [ grafanaDeploy ]

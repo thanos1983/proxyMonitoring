@@ -1,0 +1,18 @@
+---
+# tasks file for roles/nodeExporterDeploy nodeExporterDeploy
+- name: Run Prometheus Node Exporter Container
+  community.docker.docker_container:
+    pull: true
+    network_mode: default
+    tls_hostname: localhost
+    name: "{{ repo.container_name }}"
+    container_default_behavior: compatibility
+    image: "{{ repo.name }}:{{ deploy_tag }}"
+    volumes:
+      - "/:/host:ro,rslave"
+    restart_policy: unless-stopped
+    user: "{{ nodeExporter.systemAccount.uid }}:{{ nodeExporter.systemAccount.gid }}"
+    network_mode: host
+    pid_mode: host
+    command: [ "--web.config=/{{ nodeExporter.conf.dirs.conf }}/{{ nodeExporter.conf.files.web }}",
+               "--path.rootfs=/host" ]

@@ -1,0 +1,23 @@
+---
+# tasks file for roles/cadvisorDeploy cadvisorDeploy
+- name: Run Cadvisor Container
+  community.docker.docker_container:
+    pull: true
+    name: "{{ repo.container_name }}"
+    privileged: true
+    container_default_behavior: no_defaults
+    image: "{{ repo.name }}:{{ deploy_tag }}"
+    published_ports: "{{ portBinds }}"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys/fs/cgroup/cpu,cpuacct:/sys/fs/cgroup/cpuacct,cpu"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/cgroup:/cgroup:ro"
+    restart_policy: unless-stopped
+    command: [ "--port={{ cadvisor.conf.port|int }}",
+               "--prometheus_endpoint='/metrics'",
+               "--http_auth_realm='localhost'",
+               "--http_auth_file='{{ cadvisor.conf.dirs.conf }}/{{ cadvisor.conf.files.web }}'",
+               "--collector_cert='{{ cadvisor.cert.dir }}/{{ cadvisor.cert.files.crt }}'",
+               "--collector_key='{{ cadvisor.cert.dir }}/{{ cadvisor.cert.files.key }}'" ]

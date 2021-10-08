@@ -1,0 +1,9 @@
+# docker build --rm -t my.private.dockerrepo/prometheus-server:0.0.1 .
+# docker run --rm --name <e.g. prometheus> -d my.private.dockerrepo/prometheus-server:0.0.1
+
+FROM {{ repo.registry }}/prometheus:v2.28.0.1
+LABEL maintainer="athanasios.garyfalos@cpan.org"
+
+COPY ["certs", "${CERT_DIR}"]
+COPY ["{{ prometheus.conf.files.web }}", "${CONF_DIR}"]
+COPY ["{{ prometheus.conf.files.glob }}", "${CONF_DIR}"]

@@ -1,0 +1,25 @@
+---
+# tasks file for roles/prometheusDeploy account
+- name: Get all groups onnode
+  ansible.builtin.getent:
+    database: group
+    split: ':'
+  no_log: true
+
+- name: Creating system account "{{ grafana.systemAccount.name }}" with gid "{{ grafana.systemAccount.gid }}" if does not exist
+  become: true
+  ansible.builtin.group:
+    name: "{{ grafana.systemAccount.name }}"
+    state: present
+    gid: "{{ grafana.systemAccount.gid }}"
+  when: prometheus.systemAccount.name not in getent_group
+
+- name: Add the user "{{ grafana.systemAccount.name }}" with shell "{{ grafana.systemAccount.shell }}"
+  become: true
+  ansible.builtin.user:
+    name: "{{ grafana.systemAccount.name }}"
+    shell: "{{ grafana.systemAccount.shell }}"
+    comment: "{{ grafana.systemAccount.comment }}"
+    uid: "{{ grafana.systemAccount.uid }}"
+    group: "{{ grafana.systemAccount.gid }}"
+    system: yes

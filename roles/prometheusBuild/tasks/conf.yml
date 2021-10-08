@@ -1,0 +1,35 @@
+---
+# tasks file for roles/prometheusServer conf
+- name: Gather facts for Prometheus extracting points / node(s)
+  register: prometheusServersHosts
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "!any"
+      - "network"
+      - "virtual"
+      - "facter"
+  loop: "{{ groups['prometheusGrafanaServers'] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  tags: [ never ]
+
+- name: Gather facts for Prometheus extracting points / node(s)
+  register: prometheusNodeExporter
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "!any"
+      - "network"
+      - "virtual"
+      - "facter"
+  loop: "{{ groups['prometheusClients'] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  tags: [ never ]
+
+- name: Prepare the conf files and place them at "{{ tmp }}" dir
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ tmp }}/{{ item }}"
+  loop: "{{ prometheus.conf.files.values() | flatten }}"

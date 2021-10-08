@@ -1,0 +1,12 @@
+---
+# vars file for nodeExporterDeploy
+portBinds:
+  - '{{ nodeExporter.conf.port }}:{{ nodeExporter.conf.port }}'
+
+portsToCheck:
+  - '{{ nodeExporter.conf.port }}'
+
+repo:
+  name: 'my.private.dockerrepo/node-exporter'
+  registry: 'my.private.dockerrepo'
+  container_name: 'node-exporter'

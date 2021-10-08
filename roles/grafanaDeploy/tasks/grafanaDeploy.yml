@@ -1,0 +1,15 @@
+---
+# tasks file for roles/grafanaDeploy grafanaDeploy
+- name: Run Grafana Server Container
+  community.docker.docker_container:
+    pull: true
+    network_mode: default
+    tls_hostname: localhost
+    name: "{{ repo.container_name }}"
+    container_default_behavior: compatibility
+    image: "{{ repo.name }}:{{ deploy_tag }}"
+    volumes:
+      - "{{ grafana.conf.dirs.data }}:/var/lib/grafana:rw"
+      - "{{ grafana.conf.dirs.data }}:/var/log/grafana:rw"
+    published_ports: "{{ portBinds }}"
+    restart_policy: unless-stopped

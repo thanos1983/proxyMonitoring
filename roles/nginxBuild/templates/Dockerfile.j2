@@ -1,0 +1,23 @@
+# docker build --rm -t my.private.dockerrepo/proxy-nginx:1.16.1 .
+# docker run --name proxy-nginx -d -P my.private.dockerrepo/proxy-nginx:1.16.1
+
+FROM {{ repo.registry }}/nginx:1.16.1
+
+ADD ["https://my.private.repo/net-tools-2.0-0.25.20131004git.el7.x86_64.rpm", "/tmp"]
+
+RUN set -x \
+	&& yum install -y /tmp/net-tools-*.rpm \
+	&& rm -f /tmp/net-tools-*.rpm
+
+RUN set -x \
+	&& rm -f /etc/nginx/nginx.conf \
+	&& rm -f /etc/nginx/conf.d/default.conf
+
+COPY ["certs", "/etc/nginx/certs"]
+COPY ["conf.d", "/etc/nginx/conf.d"]
+COPY ["conf/nginx.conf", "/etc/nginx/nginx.conf"]
+
+HEALTHCHECK --interval=1m30s --timeout=3s --retries=3 --start-period=30s \
+        CMD netstat -tulpn | grep LISTEN | grep '0 0.0.0.0:{{ nginx.port.https }}' || exit 1
+
+EXPOSE 4443 7100 8062 8063 8065

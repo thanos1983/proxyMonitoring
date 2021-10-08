@@ -1,0 +1,54 @@
+---
+# tasks file for roles/grafanaBuild conf
+- name: Gather facts for Grafana extracting points / node(s)
+  register: prometheusServersHosts
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "!any"
+      - "network"
+      - "virtual"
+      - "facter"
+  loop: "{{ groups['prometheusGrafanaServers'] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  tags: [ never ]
+
+- name: Gather facts for Grafana extracting points / node(s)
+  register: prometheusNodeExporter
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "!any"
+      - "network"
+      - "virtual"
+      - "facter"
+  loop: "{{ groups['prometheusClients'] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  tags: [ never ]
+
+- name: Append 8 white space characters on ca
+  register: grafanaCa
+  ansible.builtin.shell:
+    # https://unix.stackexchange.com/questions/434611/add-prefix-and-suffix-to-every-line-in-a-txt-file/434612
+    cmd: "sed 's/^/        /g' {{ role_path }}/files/{{ grafana.cert.files.ca }}"
+  no_log: true
+
+- name: Append 8 white space characters on crt
+  register: grafanaCrt
+  ansible.builtin.shell:
+    cmd: "sed 's/^/        /g' {{ role_path }}/files/{{ grafana.cert.files.crt }}"
+  no_log: true
+
+- name: Append 8 white space characters on key
+  register: grafanaKey
+  ansible.builtin.shell:
+    cmd: "sed 's/^/        /g' {{ role_path }}/files/{{ grafana.cert.files.key }}"
+  no_log: true
+
+- name: Prepare the conf files and place them at "{{ tmp }}" dir
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ tmp }}/{{ item }}"
+  loop: "{{ grafana.conf.files.values() | flatten }}"
